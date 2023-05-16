@@ -1,0 +1,14 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+//Definiremos nossas tabelas - nem todos bancos de dados chamam de tabela, por isso o prisma usa model
+model User {
+  id   String @id @default(uuid()) //esse @id fala pro prisma que esse campo é nossa chave inicial (primary key) e o @default(uuid()) gera um id automático universal
+  name String
+}

@@ -1,0 +1,93 @@
+Comandos de terminal:
+cd - entra na pasta
+cs .. - volta uma pasta
+ls - mostra todas as pastas dentro daquela
+ctrl c - para a execução
+
+Configurações back-end
+
+Comandos utilizados e explicação:
+ - Para iniciar nossa pasta server e a instalação de dependências começamos com um npm init -y que cria nosso projeto js com package.json
+ - O package.json armazena todas as informações principais do nosso projeto js e as dependências (bibliotecas de terceiros)
+ - Na sequencia demos um npm i typescript -D (esse -D significa dev dependency ou seja, será usada somente em ambiente de desenvolvimento)
+ - Quando formos fazer deploy da aplicação (colocar no ar/ em produção) precisaremos converter essas dev dependency para JS para serem interpretadas pelo node
+ - Instalamos também o @types/node -D (faz o TS entender que está dentro de um projeto node)
+
+ - Configurando o TypeScript(TS)
+ - O TypeScript é uma ferramenta que nos permite adicionar tipagem estática (permite definir o tipo de cada variável no momento que estou declarando ela)
+ - npx tsc --init (npx executa binários que são instalados pelas bibliotecas do projeto. Ex: o TS na pasta bin instalou o tsc que inicializamos, ele é a config.json do TS)
+ - Dentro do tsconfig.json mudamos o target: "es2016" para "es2020" (definimos aqui qual versão do ecmascript queremos converter o código para rodar em produção, a versão 2020 o node ja entende)
+ - npm i tsx -D (instalamos o tsx que automatiza a conversão do projeto para JS quando executamos o código)
+ - Rodando o projeto para testar com tsx (npx tsx arquivo) (ex: npx tsx src/server.ts) - Para não repetir muito, alteramos no package.json o tes para tsx src/server.ts (npx la é global não precisa repetir)
+ - Colocamos um watch em tsx src/server.ts (tsx watch src/server.ts) - para que fique rodando o teste (para com CTRL C). Sempre que alteramos aparece instantâneamente
+ - Renomeamos o script test para dev (para executar o tsx watch src/server.ts)
+ - Nova maneira de testar: npm run dev
+
+ - Instalando o framework para API (Fastify)
+ - rodamos o npm i fastify (sem o -D pois ele será usado em produção)
+ - Configuramos inicialmente o arquivo server.ts
+
+ - Instalando o ESLint
+ - npm install eslint -D
+ - usaremos as configurações da rocket seat
+ - npm i @rocketseat/eslint-config -D
+ - Criamos o comando "lint": "eslint src --ext .ts --fix" em nosso package.json para corrigir automaticamente todos os arquivos com a extensão .ts usando npm run lint
+
+ - Instalando o Prisma
+ - O prisma cuida de toda interação do nosso backend com o nosso banco de dados, facilitando a comunicação entre eles
+ - Primeiramente instalamos o prisma como uma dependência de desenvolvedor: npm i prisma -D
+ - depois damos init com uma flag --datasource-provider SQLite: npx prisma init --datasource-provider SQLite
+ - O prisma suporta todos os bancos de dados, podemos migrar para qualquer outro banco futuramente sem alterar todo projeto
+ - Configurações que mudaram de máquina para máquina (arquivo .env)
+ - Configurações restantes do prisma - schema.prisma (criação da tabela)
+ - Depois de criar a tabela no schema, jogamos para o db com npx prisma migrate dev (migration é uma forma de controle de versão do banco de dados, tipo um commit)
+ - Pode testar o db com ferramentas ou com npx prisma studio
+
+ - Consultando o db dentro da API
+ - Primeiramente instalamos no projeto fora da dev com npm i @prisma/client
+ - Depois importamos o client do prisma na API
+ - instanciamos ele com const prisma = new PrismaClient()
+ - A partir dai conseguimos usar as funções do prisma (acessar tabelas, listar etc)
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Front-end
+
+- Next.js
+- Iniciaremos executando npx create-next-app@latest web --use-npm
+- Ele fará uma serie de questionamentos e respondemos Yes para todos (usar lint, tailwind, criar pasta source etc coisas basicas)
+- Dentro da pasta web podemos dar um npm run dev para testar
+
+- Conceitos de React+Next.js
+
+- Componentes:
+    - São formas de separar nossa tela cheia de informações em pedaços menores. Componentes no react nada mais são que funções que retornam html.
+    - Servem pra facilitar a manutenção e o reaproveitamento de comportamentos (exemplo botões)
+    - No react não usamos "" no style, passamos objetos JS (podemos criar um const styles = {color: "F88"} e passar style={styles}, assim por diante ex2: const nome = "Victor" e passa {nome})
+    - Parecido com componentização no swift
+
+- Propriedades:
+    - Cada componente, para ser reaproveitado porem ter estilo, nome ou titulo diferente pode receber uma propriedade (parecido por exemplo com botão custom que recebe um titulo no swift)
+    - primeiramente criamos uma interface que irá conter as propriedades que o componente terá: Ex:
+    interface ButtonProps {
+        title: string
+    }
+    - Depois em nosso componente, falamos que ele recebe como parâmetro essa interface:
+    export function Button(props: ButtonProps) {
+        return(
+            <p>{props.title}</p>
+        )
+    }
+    - Na hora de chamar o componente posso chamar na home por exemplo como:
+    <Button title="Botão"/>
+    - Obs: antes de chamar ele será importado e provavelmente estará separado em uma pasta components
+
+- Roteamento:
+    - Quase toda aplicação tem diferentes páginas e o roteamento cuida dessa parte
+    - Dentro do next (pasta app) todo arquivo nomeado como page.tsx vira automaticamente uma "rota de navegação"
+    - Exemplo queremos criar uma pagina cadastro. Dentro da pasta app criamos a pasta cadastro (nome da pasta é o que fica na navegação) e dentro dela um page.tsx com:
+    export default function Cadastro() {
+        return <h1>Pagina de cadastro</h1>
+    }
+    - No meu localhost:3000/cadastro irá mostrar este h1 pagina de cadastro
+    - Essa capacidade vem inclusa no próprio framework next.js
