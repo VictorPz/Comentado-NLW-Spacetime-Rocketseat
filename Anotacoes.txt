@@ -13,7 +13,7 @@ Comandos utilizados e explicação:
  - Quando formos fazer deploy da aplicação (colocar no ar/ em produção) precisaremos converter essas dev dependency para JS para serem interpretadas pelo node
  - Instalamos também o @types/node -D (faz o TS entender que está dentro de um projeto node)
 
- - Configurando o TypeScript(TS)
+ Configurando o TypeScript(TS)
  - O TypeScript é uma ferramenta que nos permite adicionar tipagem estática (permite definir o tipo de cada variável no momento que estou declarando ela)
  - npx tsc --init (npx executa binários que são instalados pelas bibliotecas do projeto. Ex: o TS na pasta bin instalou o tsc que inicializamos, ele é a config.json do TS)
  - Dentro do tsconfig.json mudamos o target: "es2016" para "es2020" (definimos aqui qual versão do ecmascript queremos converter o código para rodar em produção, a versão 2020 o node ja entende)
@@ -23,17 +23,17 @@ Comandos utilizados e explicação:
  - Renomeamos o script test para dev (para executar o tsx watch src/server.ts)
  - Nova maneira de testar: npm run dev
 
- - Instalando o framework para API (Fastify)
+ Instalando o framework para API (Fastify)
  - rodamos o npm i fastify (sem o -D pois ele será usado em produção)
  - Configuramos inicialmente o arquivo server.ts
 
- - Instalando o ESLint
+ Instalando o ESLint
  - npm install eslint -D
  - usaremos as configurações da rocket seat
  - npm i @rocketseat/eslint-config -D
  - Criamos o comando "lint": "eslint src --ext .ts --fix" em nosso package.json para corrigir automaticamente todos os arquivos com a extensão .ts usando npm run lint
 
- - Instalando o Prisma
+ Instalando o Prisma
  - O prisma cuida de toda interação do nosso backend com o nosso banco de dados, facilitando a comunicação entre eles
  - Primeiramente instalamos o prisma como uma dependência de desenvolvedor: npm i prisma -D
  - depois damos init com uma flag --datasource-provider SQLite: npx prisma init --datasource-provider SQLite
@@ -43,7 +43,7 @@ Comandos utilizados e explicação:
  - Depois de criar a tabela no schema, jogamos para o db com npx prisma migrate dev (migration é uma forma de controle de versão do banco de dados, tipo um commit)
  - Pode testar o db com ferramentas ou com npx prisma studio
 
- - Consultando o db dentro da API
+ Consultando o db dentro da API
  - Primeiramente instalamos no projeto fora da dev com npm i @prisma/client
  - Depois importamos o client do prisma na API
  - instanciamos ele com const prisma = new PrismaClient()
@@ -53,14 +53,14 @@ Comandos utilizados e explicação:
 
 Front-end
 
-- Next.js
+Next.js
 - Iniciaremos executando npx create-next-app@latest web --use-npm
 - Ele fará uma serie de questionamentos e respondemos Yes para todos (usar lint, tailwind, criar pasta source etc coisas basicas)
 - Dentro da pasta web podemos dar um npm run dev para testar
 
 - Conceitos de React+Next.js
 
-- Componentes:
+Componentes:
     - São formas de separar nossa tela cheia de informações em pedaços menores. Componentes no react nada mais são que funções que retornam html.
     - Servem pra facilitar a manutenção e o reaproveitamento de comportamentos (exemplo botões)
     - No react não usamos "" no style, passamos objetos JS (podemos criar um const styles = {color: "F88"} e passar style={styles}, assim por diante ex2: const nome = "Victor" e passa {nome})
@@ -91,3 +91,70 @@ Front-end
     }
     - No meu localhost:3000/cadastro irá mostrar este h1 pagina de cadastro
     - Essa capacidade vem inclusa no próprio framework next.js
+
+Tailwind
+- Biblioteca de estilização (css)
+- Substitui o css tradicional, parecida com bootstrap
+- Temos apenas 1 arquivo css e é feito com class (no html é class no react é className)
+- Exemplo temos uma <div> podemos configurar ela com <div className="font-bold text-2xl uppercase w-20"> cada um desses nomes executando uma alteração de css
+
+- Alguns comandos:
+- w-valor(ex w-10): width com valor
+- h-valor(ex h10): height com valor
+- m-valor: margin com valor
+- mx-valor: margin eixo x (left right)
+- my-valor: margin eixo y (top bottom)
+- mt - margin top, mr - margin right, mb - margin bottom, ml - margin left
+- -valor - Padding (mesmo esquema da margin)
+- bg-cor-peso - background color com valor
+
+Eslint + Prettier Tailwind
+ - Dentro da pasta web vamos utilizar o comando npm i @rocketseat/eslint-config -D para instalar as configs do eslint da rocketseat
+ - Modifico meu .eslintrc.json, transformo o extends em um array e adiciono "@rocketseat/eslint-config/react"
+ - Conferir arquivos para ver os erros apontados e realizar imports caso necessário (ctrl .)
+ - Instalar o prettier (npm i prettier-plugin-tailwindcss -D)
+ - criar na pasta web um arquivo chamado prettier.config.js e adicionar:
+    module.exports = {
+  plugins: [require('prettier-plugin-tailwindcss')],
+}
+- Se precisar dar um ctrl shift p e reload window no vscode para ele ler as novas configs do prettier e ordenar as classes de css automaticamente
+
+Configurações Mobile
+ - Começamos criando o projeto mobile (com emulador) - npx create-expo-app mobile
+ - trocamos a extensão da app pra tsx (ele entende ts automaticamente)
+ - rodamos com npm run start
+ - Dentro do projeto mobile usaremos react native (parecido com swift, usa view, text etc não tem semântica nem herança de div)
+ - Estilo css transmitido como objeto js, ex: (caso não use tailwind)
+    const style = Stylesheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: '#000'
+        }
+    })
+- Usaremos o tailwind para customizar o css (porém o native wind que é da comunidade)
+- comando de instalação: npm i nativewind
+- também precisa instalar o tailwind como dependência de desenvolvimento: npm i tailwindcss -D
+- iniciar o tailwind: npx tailwindcss init (isso cria o tailwind.config.js)
+- substituir o content existente pelo content: ["./App.{js,jsx,ts,tsx}", "./<custom-folder>/**/*.{js,jsx,ts,tsx}"],
+- abrir arquivo babel.config.js e adicionar plugins: ["nativewind/babel"], em baixo de presets.
+- como estamos usando typescript, também precisamos ir no arquivo tsconfig.json e em compiler options adicionar:
+    "types": ["nativewind/types"]
+- Rodar novamente a aplicação
+
+obs: se estiver usando tailwind lembrar de definir na estilização da view o flex-1 (cobrir tela toda) (por padrão no mobile todas tem display flex)
+
+Eslint+prettier mobile
+- npm i eslint @rocketseat/eslint-config -D
+- cria o arquivo .eslintrc.json com:
+    {
+        "extends": [
+            "@rocketseat/eslint-config/react"
+        ]
+    }
+- instala plugin do prettier npm i prettier-plugin-tailwindcss -D
+- cria o prettier.config.js na raiz e adiciona:
+    module.exports = {
+        plugins: [require('prettier-plugin-tailwindcss')],
+    }
+
+
