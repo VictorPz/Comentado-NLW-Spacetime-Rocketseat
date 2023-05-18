@@ -107,6 +107,10 @@ Tailwind
 - mt - margin top, mr - margin right, mb - margin bottom, ml - margin left
 - -valor - Padding (mesmo esquema da margin)
 - bg-cor-peso - background color com valor
+- w-[360px] - define um valor customizado para a width nos [] (vale para outras propriedades)
+- hover: ex: text-gray-50 - faz o efeito de hover e troca a cor nesse exemplo do texto para 50
+- Podemos definir a opacity com /valor (ex: border-white/10)
+- transition-colors: faz automaticamente a animação de transição de cores
 
 Eslint + Prettier Tailwind
  - Dentro da pasta web vamos utilizar o comando npm i @rocketseat/eslint-config -D para instalar as configs do eslint da rocketseat
@@ -156,5 +160,11 @@ Eslint+prettier mobile
     module.exports = {
         plugins: [require('prettier-plugin-tailwindcss')],
     }
+- Pacote de icones: npm i lucide-react
+
+Importando imagens no next:
+- Primeiramente fazemos o import do image: import Image from 'next/image'
+- Fazemos o import da imagem ex: import nlwLogo from '../assets/nlw-spacetime-logo.svg'
+- Usamos na div como: <Image src={nlwLogo} alt="nlw logo image" />
 
 

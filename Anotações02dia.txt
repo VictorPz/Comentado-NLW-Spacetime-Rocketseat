@@ -1,0 +1,36 @@
+Importando fontes:
+- O Next já trás uma forma de importar fontes do google de forma mais automatizada devido ao pacote next/font/google. É só digitar o nome das fontes no layout.tsx na src! EX:
+    import {
+        Roboto_Flex as Roboto,
+        Bai_Jamjuree as BaiJamjuree,
+    } from 'next/font/google'
+- Depois disso só criar:
+    const roboto = Roboto({ subsets: ['latin'], variable: '--font-roboto' })
+    const baiJamjuree = BaiJamjuree({ subsets: ['latin'], weight: '700' (poderia ser um array tbm), variable: '--font-bai-jamjuree'  })
+- Obs: Roboto_flex pois o flex indica que ela já se adapta ao peso que escolhermos. BaiJam não se adapta por isso tem o weight definido
+- Obs2: definimos variables para passar elas mais pra frente como no css:
+    export default function RootLayout({ children }: { children: ReactNode }) {
+        return (
+            <html lang="en">
+                <body className={`${roboto.variable} font-sans`}>{children}</body>
+            </html>
+        )
+    }
+- Feito isto, precisamos ir no tailwind.config, em extend e definir a fonte que vamos usar (caso contrário ele usa a padrão do sistema):
+        extend: {
+            fontFamily: {
+                sans: 'var(--font-roboto)',
+            },
+        },
+- Agora faremos o mesmo para a baiJamjuree, criando no tailwind config um alt (alternativo e passando na className) ficando:
+    <body className={`${roboto.variable} ${baiJamjuree.variable} font-sans`}>
+- Agora é só passar no texto desejado a font-alt que vai aplicar a baiJamjuree e no resto aplicará automaticamente a roboto
+
+Cores:
+- Em tailwind.config.js podemos editar a parte de colors dentro de theme, redefinindo determinado padrão de cor desejado
+
+Favicon:
+- Dentro de app se o arquivo tiver o nome icon(png) ou favicon(ico) já detecta automaticamente como favicon
+
+Comentários React:
+{/*comentário*/}
