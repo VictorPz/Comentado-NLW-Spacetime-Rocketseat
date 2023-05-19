@@ -1,0 +1,36 @@
+Voltamos ao backend pensando primeiramente na estrutura do banco de dados da aplicação
+
+obs: /* eslint-disable prettier/prettier */ - desliga o prettier
+
+Prisma:
+- No schema.prisma definimos a estrutura do nosso banco de dados. Será dividido entre user e memory (cada usuário cadastra várias memórias)
+- Depois de realizar as alterações executar npx prisma migrate dev para realizar elas no db
+
+- Rodando db: npx prisma studio
+
+- npx prisma migrate reset - reseta o banco de dados
+
+Criação do CRUD de memórias (Create, Read, Update, Delete)
+- criamos o prisma ts com:
+    import { PrismaClient } from '@prisma/client'
+    export const prisma = new PrismaClient({
+    log: ['query'], // permite ver o que cada chamada resulta no db
+    })
+- criamos a memories.ts para cuidar das rotas ex:
+    import { FastifyInstance } from 'fastify'
+    import { prisma } from '../lib/prisma'
+
+    export async function memoriesRoutes(app: FastifyInstance) {rotas}
+- fizemos um app.register no server para dizer de onde vem as rotas:
+    const app = fastify()
+
+    app.register(memoriesRoutes)
+
+- instalamos a biblioteca zod para fazer validação de id na memories pois podemos receber id nulo
+- npm i zod
+
+Depois de configurar todo o CRUD na memories.ts, instalamos o plugin cors
+- npm i @fastify/cors
+- Ele é uma tecnica de segurança que determina quais endereços podem acessar nossa api (quais url de front o backend é acessado)
+- No server.ts criamos o app.register(cors, {origin: true}) Esse origin true basicamente diz que todas url de front podem acessar nosso back
+- O certo no origin é definir : ['Url de desenvolvimento', 'url de produção']

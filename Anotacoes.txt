@@ -111,6 +111,7 @@ Tailwind
 - hover: ex: text-gray-50 - faz o efeito de hover e troca a cor nesse exemplo do texto para 50
 - Podemos definir a opacity com /valor (ex: border-white/10)
 - transition-colors: faz automaticamente a animação de transição de cores
+- space-y-5: adciona 20px de espaço vertical entre cada elemento na div
 
 Eslint + Prettier Tailwind
  - Dentro da pasta web vamos utilizar o comando npm i @rocketseat/eslint-config -D para instalar as configs do eslint da rocketseat
@@ -160,6 +161,8 @@ Eslint+prettier mobile
     module.exports = {
         plugins: [require('prettier-plugin-tailwindcss')],
     }
+
+
 - Pacote de icones: npm i lucide-react
 
 Importando imagens no next:

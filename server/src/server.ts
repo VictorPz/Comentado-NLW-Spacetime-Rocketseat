@@ -1,20 +1,15 @@
 /* eslint-disable prettier/prettier */
-// Iniciamos importando o framework fastify
 import fastify from 'fastify'
-import { PrismaClient } from '@prisma/client'
+import cors from '@fastify/cors'
+import { memoriesRoutes } from './routes/memories'
 
-// Iniciamos a criação da nossa API
 const app = fastify()
-// Instanciamos Nosso DB
-const prisma = new PrismaClient()
 
-// Primeiro método: GET (Toda vez que quero listar algo)
-app.get('/getusers', async () => {
-    const users = await prisma.user.findMany()
-  return users
+app.register(memoriesRoutes) // registra um arquivo de rotas
+app.register(cors, {
+  origin: true
 })
 
-// Primeiramente definimos o server que ficará ouvindo http onde nosso front vai fazer requisições http
 app
   .listen({
     // Se acessarmos localhost 3333 vamos bater aqui (pelo menos enquanto estamos em desenvolvimento)

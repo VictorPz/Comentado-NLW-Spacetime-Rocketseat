@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* deixa a fonte mais otimizada/tratada */
+body {
+    -webkit-font-smoothing: antialised;
+    text-rendering: optimizeLegibility;
+}

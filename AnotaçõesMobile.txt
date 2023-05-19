@@ -1,0 +1,99 @@
+Mobile:
+- Iniciamos configurando as cores no extend do taialwind.config.js (mesma coisa da web)
+
+Importando fontes:
+- fizemos a instalação das fontes através do expo-google-fonts (https://github.com/expo/google-fonts):
+- npx expo install @expo-google-fonts/roboto @expo-google-fonts/bai-jamjuree expo-font
+- Logo após, importamos as fontes:
+    import {
+        useFonts,
+        Roboto_400Regular,
+         Roboto_700Bold,
+    } from '@expo-google-fonts/roboto'
+
+    import { BaiJamjuree_700Bold } from '@expo-google-fonts/bai-jamjuree'
+
+- Dentro do app criamos:
+    const [hasLoadedFonts] = useFonts({
+            Roboto_400Regular,
+            Roboto_700Bold,
+            BaiJamjuree_700Bold,
+    })
+
+    if (!hasLoadedFonts) {
+        return null
+    }
+- Garantindo que nosso useFonts carregue as fontes e que nada carregue antes das fontes serem carregadas
+- Logo após fazer isto, vamos no tailwind.config.js e criamos no extended:
+        fontFamily: {
+            title: 'Roboto_700Bold',
+            body: 'Roboto_400Regular',
+            alt: 'BaiJamjuree_700Bold',
+        },
+- Obs: Atenção aos nomes das fontes. No expo temos que importar cada uma, não podemos usar o roboto flex
+- Ir no eslintrc,json e:
+            "rules": {
+                "camelcase": "off"
+            }
+
+Importando imagens:
+- Colocamos nossa imagem png dentro da pasta assets
+- fazemos o import ex: import blurbg from './src/assets/bg-mobile.png'
+- utilizamos onde pretendendos ex: <ImageBackground> source={blurbg} </ImageBackground>
+- podemos customizar somente a imagem com ex: imageStyle={{ position: 'absolute', left: '-100%' }},
+    uma vez que o ImageBackground funciona como uma div que põe uma imagem dentro, então customizar só ele é como customizar uma div
+- Obs: Porém aparentemente não conseguimos usar tailwind dentro do imageStyle
+
+- Vai ficar dando um erro, para corrigir criamos o arquivo assets.d.ts e dentro dele declaramos:
+    declare module '*.png'
+- Isso faz com que o TypeScript entenda que todo arquivo .png é algo que eu posso importar
+
+- Próximo passo: instalar as bibliotecas que nos permitem configurar e ler svg
+
+Importando SVG:
+- Começaremos instalando a biblioteca React Native SVG
+- npx expo install react-native-svg (npx pois n temos expo globalmente)
+- depois: npm i -D react-native-svg-transformer
+- criar arquivo na raiz metro.config.js e colar:
+    const { getDefaultConfig } = require("expo/metro-config");
+
+    module.exports = (() => {
+    const config = getDefaultConfig(__dirname);
+
+    const { transformer, resolver } = config;
+
+    config.transformer = {
+        ...transformer,
+        babelTransformerPath: require.resolve("react-native-svg-transformer"),
+    };
+    config.resolver = {
+        ...resolver,
+        assetExts: resolver.assetExts.filter((ext) => ext !== "svg"),
+        sourceExts: [...resolver.sourceExts, "svg"],
+    };
+
+    return config;
+    })();
+
+- No arquivo assets.d.ts colocar:
+    declare module "*.svg" {
+    import React from 'react';
+    import { SvgProps } from "react-native-svg";
+    const content: React.FC<SvgProps>;
+    export default content;
+    }
+
+Importando o SVG:
+- A importação transofrma nosso svg num componente podendo ser usar por ex: <Stripes />
+- Importação fica: import Stripes from './src/assets/stripes.svg'
+
+OBS: Se não rodar a importação tente limpar o cache com npx expo start --clear
+
+- Por padrão o tailwind no react native só suporta componentes padrão. Para conseguirmos customizar um componente criado tipo o svg Stripes precisamos fazer:
+    const StyledStripes = styled(Stripes)
+- Esse styled recebe um componente e podemos usar o <StyledStripes/> no lugar do <Stripes/>
+
+- OBS: Sempre atento ao usar um text ou qualquer coisa pra ver se está nas importações do react native: import { ImageBackground, View, Text } from 'react-native'
+
+- <TouchableOpacity> é um botão que quando tocado diminui de leve a opacidade e activeOpacity={0.7} controla o quanto ele diminui
+- Sempre que tenho um texto na interface no react native preciso usar um Text

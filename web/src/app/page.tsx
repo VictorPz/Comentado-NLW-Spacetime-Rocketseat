@@ -32,8 +32,39 @@ export default function Home() {
         </a>
 
         {/* Hero */}
-        <div>
+        <div className="space-y-5">
           <Image src={nlwLogo} alt="nlw logo image" />
+
+          <div className="max-w-[420px] space-y-1">
+            <h1 className="text-5xl font-bold leading-tight text-gray-50">
+              Sua cápsula do tempo
+            </h1>
+            <p className="text-lg leading-relaxed">
+              Colecione momentos marcantes da sua jornada e compartilhe (se
+              quiser) com o mundo!
+            </p>
+          </div>
+
+          <a
+            className="inline-block rounded-full bg-green-500 px-5 py-3 font-alt text-sm uppercase leading-none text-black hover:bg-green-600"
+            href=""
+          >
+            CADASTRAR LEMBRANÇA!
+          </a>
+        </div>
+
+        {/* Copyright */}
+        <div className="text-sm leading-relaxed text-gray-200">
+          Feito com 💜 no NLW da{' '}
+          <a
+            className="underline hover:text-gray-100"
+            target="_blank"
+            rel="noreferrer"
+            href="https://rocketseat.com.br"
+          >
+            Rocketseat
+          </a>{' '}
+          🚀
         </div>
       </div>
 
