@@ -1,0 +1,104 @@
+Fluxo:
+- Nosso front vai solicitar o login no github
+- Este login voltará um código que poderá ser convertido num acesstoken (token de acesso aos dados como imagem, nome do perfil etc)
+- O front joga esse código pro back que converte em um acess token confirmando com o git se é um usuário
+- back salva informações no db
+
+Front-end:
+
+Criar um oauth app no github:
+- Criamos o app Spacetime (DEV) de início, passando a url http://localhosto:3000 e url de auth http://localhosto:3000/api/auth/callback
+- forma do next criar as variáveis de ambiente (.env.local)
+
+- dentro do front criamos: GITHUB_CLIENT_ID=2599c91207bf7255f175
+- no env do back criamos: GITHUB_CLIENT_ID=2599c91207bf7255f175 e GITHUB_CLIENT_SECRET="3901f8657e72170e17de2fe67829185280fe5632"
+
+- O next tem a peculiaridade de toda variavel ambiente que vai ser exposta ao app ter NEXT_PUBLIC de prefixo então alteramos no env do front
+
+Obtendo o github code:
+- Em nossa page, substituimos a href da parte de singup por {`https://github.com/login/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}`}
+- Feito isto, já volta na nossa url de callback (http://localhosto:3000/api/auth/callback) o code que precisamos callback/code=xxxxxxx
+
+Back-end:
+- Para o backend ler as dependências do env, precisamos instalar um pacote chamado dotenv
+- npm i dotenv -D
+- Criar no server.ts o import 'dotenv/config'
+- Criar na pasta routes a auth.ts
+- Faço a mesma config da memories e crio a unica rota de autenticação que teremos bem parecido com as rotas do crud porém validando o code que esperamos com z.object
+- instalamos o axios (para fazer requisições http apesar de já estar disponível a fetch no node)
+- npm i axios
+
+- Fazemos a requisição para transformar o code fornecido para acess token e o acess token em dados do usuário.
+- Fazemos uma verificação dos dados com o zobject
+- Conferimos se precisa salvar esse usuario no db ou se ele ja existe
+- Criamos o Jason web token
+
+JWT:
+- É um token gerado do back para o frontend para decidir/permitir que o usuario fique logado por x periodod de tempo
+- Iniciamos instalando o npm i @fastify/jwt
+- Importamos ele no server
+- Registramos ele no server como fizemos com o cors
+- passamos um secret para ele (no video definido como 'spacetime') mas deve ser uma string unica pois ela assina o jwt e difere de outras aplicações
+
+- Voltamos no nosso auth para criar o jwt token
+
+Criando rotas que dependem de autenticação:
+- Começamos com await request.jwtVerify() em nossas rotas que queremos verificar se existe/precisa de um jwt válido (passamos request no async da rota)
+- Precisamos depois criar um auth.d.ts para dizer ao typescript o que tem no jwt, pois ele não sabe o que esperar.
+- Logo após corrigimos nossa rota para retornar apenas ONDE o id for igual ao sub que é o id no jwt:
+          where: {
+            id: request.user.sub
+        },
+- Como precisamos fazer isso no momento para todas as nossas requests, ao invés de fazer de uma a uma faremos o seguinte:
+- Vamos no app, criamos um app.addHook('preHandler', async (request) => {await request.jwtVerify()})
+
+De volta ao front-end:
+- Salvando o jwt token nos cookies:
+- O Next nos permite criar rotas assim como no back não necessáriamente visíveis ao usuário.
+- Criamos então primeiramente, para lidar com nossa autenticação (o code que vem do git) uma sequência de pastas como no link de resposta para lidar com a routes
+- Criamos: api, auth e callback. Dentro de callback criamos o route.ts
+- O ato de redirecionar o usuário / acessar uma url sempre é get
+
+- Dentro da nossa route.ts, fazemos uma export async function GET(request: NextRequest) e já temos acesso a pagina que retorna nosso code do git
+- Dentro desta function get, pegamos o code:
+  const { searchParams } = new URL(request.url) // Esse searchParams já nos mostra todos os parâmetros da url incluindo o code que precisamos
+  const code = searchParams.get('code')
+- Próximo passo é enviar esse code para o backend
+- Para isso começamos instalando o axios (npm i axios)
+- Dentro da pasta source criamos a pasta lib e dentro dela o api.ts que define o caminho padrão para o nosso backend:
+  import axios from 'axios'
+  export const api = axios.create({
+    baseURL: 'http://localhost:3333',
+  })
+- Feito isto, voltamos no route.ts e criamos o registerResponse que retornará nosso token:
+    const registerResponse = await api.post('/register', {
+      code,
+    })
+- Como podemos notar o register response faz uma requisição no register do back end passando o code.
+- Depois armazenamos nosso token que volta na data do register response:
+  const { token } = registerResponse.data
+- Redirecionamos o usuário para a home page e salvamos o token nos cookies:
+  const redirectURL = new URL('/', request.url)
+
+  return NextResponse.redirect(redirectURL, {
+    headers: {
+      'Set-Cookie': `token=${token}; Path=/;`,
+    },
+  })
+
+- Voltamos na pages(pagina principal) e importamos os cookies lá para utilizar:
+  import { cookies } from 'next/headers'
+- Com eles importados podemos verificar se o usuário está autenticado com o método .has dos cookies que verifica a existência de um cookie x:
+  const isAuthenticated = cookies().has('token')
+- Sabendo se o usuário está ou não autenticado, podemos trocar o componente que é exibido com if ternário e definir nossas exibições ex:
+  {isAuthenticated ? <Profile /> : <Sigin />}
+- Dentro da nossa nova view ( Profile ) precisamos acessar os dados do usuário que estão no token, para isso:
+- Usamos uma lib chamada jwt-decode (npm i jwt-decode)
+- Criamos na lib um authUser.ts para fazer a autenticação dos usuarios e a conversão do jwt em dados com uma função getUser
+- Agora sim dentro de profile fazemos uma const { name, avatarUrl } = getUser()
+- Antes de tentarmos carregar uma imagem com o next, precisamos ir no next.config e falar de quais domínios aceitamos imagens:
+  const nextConfig = {
+    images: {
+      domains: ['avatars.githubusercontent.com'],
+    },
+  }

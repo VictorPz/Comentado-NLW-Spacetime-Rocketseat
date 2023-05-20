@@ -1,0 +1,22 @@
+Durante a criação do fluxo, separamos a página em componentes.
+- Criação da pasta components na src
+- Dentro dela criamos os tsx com os nomes dos componentes que desejamos, exemplo: Copyright.tsx
+- Dentro do copyright.tsx fazemos:
+    export function Copyright() {
+        return(
+        <div className="text-sm leading-relaxed text-gray-200">
+            Feito com 💜 no NLW da{' '}
+            <a
+                className="underline hover:text-gray-100"
+                target="_blank"
+                rel="noreferrer"
+                href="https://rocketseat.com.br"
+            >
+                Rocketseat
+            </a>{' '}
+            🚀
+        </div>
+        )
+    }
+- De volta no page.tsx só importamos o <Copyright /> no local onde ele ficava
+OBS: Cuidado para sempre fazer a importação correta

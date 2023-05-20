@@ -4,9 +4,16 @@ import { z } from 'zod'
 import { prisma } from '../lib/prisma'
 
 export async function memoriesRoutes(app: FastifyInstance) {
+  // Espera um jwt para todas as rotas
+  app.addHook('preHandler', async (request) => {
+    await request.jwtVerify()
+  })
   // Primeiro método: Ver as memórias
-  app.get('/memories', async () => {
+  app.get('/memories', async (request) => {
     const memories = await prisma.memory.findMany({ // procura as memorias e ordena por criação
+      where: {
+        id: request.user.sub
+      },
       orderBy: {
         createdAt: 'asc',
       }
@@ -20,7 +27,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
     })
   })
   // Nesta rota vamos receber a descrição da memória, por isso o :id pra pegar a memória exata que buscamos = Read
-  app.get('/memories:id', async (request) => {
+  app.get('/memories:id', async (request, reply) => {
     // nosso request sempre vai ser um objeto, por isso desestruturamos ele logo a baixo para verificar o id
     // criamos nosso paramsSchema que é um zobject que verifica se nosso id é uma string e um uuid
     const paramsSchema = z.object({
@@ -37,6 +44,12 @@ export async function memoriesRoutes(app: FastifyInstance) {
         id,
       }
     })
+
+    // Se o id do usuário que criou a memória e do usuário logado forem diferentes e aquela memória não for pública, não permito acesso
+    if (!memory.isPublic && memory.userId !== request.user.sub) {
+      return reply.status(401).send()
+    }
+
     return memory
   })
 
@@ -60,15 +73,15 @@ export async function memoriesRoutes(app: FastifyInstance) {
         content,
         coverUrl,
         isPublic,
-        // id mocado com o que criei no db pois ainda não temos como pegar o id de um usuário logado
-        userId: 'a623c908-2a81-40db-8211-a35e1a2364d9'
+        // id mocado com o que criei no db de inicio e depois usando jwt
+        userId: request.user.sub,
       }
     })
     return memory
   })
 
   // Modificar memória = Update
-  app.put('/memories:id', async (request) => {
+  app.put('/memories:id', async (request, reply) => {
     const paramsSchema = z.object({
       id: z.string().uuid()
     })
@@ -83,8 +96,19 @@ export async function memoriesRoutes(app: FastifyInstance) {
 
     const { content, coverUrl, isPublic } = bodySchema.parse(request.body)
 
+    // Mesma verificação se quem tá logado também criou a memória, se sim pode editar
+    let memory = await prisma.memory.findUniqueOrThrow({
+      where: {
+        id,
+      }
+    })
+
+    if (memory.userId !== request.user.sub) {
+      return reply.status(401).send()
+    }
+
     // Quero atualizar uma memory onde o id é este que recebi na requisição e os dados são estes
-    const memory = await prisma.memory.update({
+    memory = await prisma.memory.update({
       where: {
         id,
       },
@@ -100,12 +124,23 @@ export async function memoriesRoutes(app: FastifyInstance) {
 
 
   // Remover memória = Delete
-  app.delete('/memories:id', async (request) => {
+  app.delete('/memories:id', async (request, reply) => {
     const paramsSchema = z.object({
       id: z.string().uuid()
     })
 
     const { id } = paramsSchema.parse(request.params)
+
+    // Verificação de usuário logado x id de quem criou a memória
+    const memory = await prisma.memory.findUniqueOrThrow({
+      where: {
+        id,
+      }
+    })
+
+    if (memory.userId !== request.user.sub) {
+      return reply.status(401).send()
+    }
 
     // Aqui não precisamos retornar nada só deletar o id que foi passado
     await prisma.memory.delete({
