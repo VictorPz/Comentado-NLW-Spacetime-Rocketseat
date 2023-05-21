@@ -5,5 +5,35 @@ Web:
 - Conforme o figma, temos sempre uma parte da aplicaçao que nunca muda independente do caminho que vc está.
     Ps: Relembrando no Next, cada caminho (ex: localhosto:3000/memories/new) é uma pasta (ex: Pasta memories, pasta new, arquivo page.tsx)
 - Então quando falamos de algo que Não muda na aplicação, estamos falando do layout (até ja vem um layout.tsx criado)
-- Copiamos então toda parte esquerda (comentário Left screen) que está no return da nossa page.tsx e colamos em baixo de children na layout
+- Copiamos então tudo que está no return da nossa page.tsx e colamos em baixo de children na layout
+- Trocamos o childen com o conteúdo que estava dentro da div da right screen ( que era a empty memories)
 - Ajustamos os imports
+- Removemos então tudo que está na page.tsx home e deixamos somente o que é específico da page home (no caso só empty memories que era a anotação do right screen )
+
+Logout do sistema:
+- Basicamente dentro da pasta api fazemos parecido com login, porém ao invés d epreservar um token, zeramos o conteúdo e duração dele.
+- Criamos primeiro dentro de api/auth a pasta logout/route.ts
+- depois no botão de quero sair passamos no href o caminho /api/auth/logout
+- Sempre que formos fazer algumas navegações dentro da aplicação é preferível utilizar o Link do next do que a âncora (a) do html mas em alguns casos o link n funciona
+
+Criação da página de formulário para registrar uma nova memória:
+- Criamos o atalho no app memories/new/page.tsx
+- criamos nosso form conforme o figma
+
+Formulario:
+- Para customizar o checkbox usamos o plugin https://github.com/tailwindlabs/tailwindcss-forms (tail wind css forms)
+- npm install -D @tailwindcss/forms
+
+Dicas:
+- Criando input type file invisível (sem ficar aquela box de escolher arquivo gigante):
+    <label htmlFor="media">Anexar media</label> - cria uma label para representar ele (vinculo htmlFor com id do input)
+    <input type="file" id="media" className="invisible h-0 w-0" /> - define ele como invisível sem ocupar altura/largura
+
+Middleware de autenticação:
+- No front o usuário pode acessar rotas digitando na barra de pesquisa, mas algumas rotas só queremos que ele acesse se estiver logado.
+- Quando queremos interceptar esse acesso do usuário a determinadas rotas e endereços, chamados de Middleware
+- Começamos criando dentro de src um middleware.ts
+- Dentro do middleware.ts criamos nossa expor function parecido com as rotas de acesso mas lá exportamos uma const config com um matcher
+- O matcher diz em quais rotas eu quero disparar o meu middleware, ou seja, em quais endereços da aplicação eu quero que o usuário seja obrigado a somente acessar logado
+
+Mobile:
