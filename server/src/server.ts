@@ -26,6 +26,7 @@ app
     port: 3333,
     // listen devolve uma promise (algo que ainda virá) e o then() "ouve" quando o listen estiver finalizado e ENTÃO faz alguma coisa (no nosso caso executamos uma função () => {})
     // Relembrando () => {} é uma arrow/anonymous function
+    host: '0.0.0.0', // para conseguir acessar com ipv4 no mobile
   })
   .then(() => {
     console.log('Http server running on http://localhost:3333')

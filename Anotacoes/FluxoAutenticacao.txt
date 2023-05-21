@@ -93,8 +93,10 @@ De volta ao front-end:
 - Sabendo se o usuário está ou não autenticado, podemos trocar o componente que é exibido com if ternário e definir nossas exibições ex:
   {isAuthenticated ? <Profile /> : <Sigin />}
 - Dentro da nossa nova view ( Profile ) precisamos acessar os dados do usuário que estão no token, para isso:
+
 - Usamos uma lib chamada jwt-decode (npm i jwt-decode)
 - Criamos na lib um authUser.ts para fazer a autenticação dos usuarios e a conversão do jwt em dados com uma função getUser
+
 - Agora sim dentro de profile fazemos uma const { name, avatarUrl } = getUser()
 - Antes de tentarmos carregar uma imagem com o next, precisamos ir no next.config e falar de quais domínios aceitamos imagens:
   const nextConfig = {
@@ -102,3 +104,60 @@ De volta ao front-end:
       domains: ['avatars.githubusercontent.com'],
     },
   }
+- Logo após isto é só utilizar
+
+Mobile:
+- Para ajudar na autenticação no mobile usaremos o expo auth session.
+- npx expo install expo-auth-session expo-crypto
+- Logo após vamos em nosso app.json e cadastramos um "scheme": "nlwspacetimevkpz"
+- Criamos uma nova aplicação no github oatuh, dessa vez para mobile.
+- A url de callback para testar em simulador ou celular tem que ser a definida na documentação https://docs.expo.dev/guides/authentication/#github (exp://localhost:19000/--/*)
+- Seguindo a doc do  precisamos de colar um código na app.tsx (marcado com /*Doccode*/)
+
+- Deu um errinho na url da documentação, pegamos a correta fazendo dentro de useEffect():
+      console.log(
+      makeRedirectUri({
+        scheme: 'nlwspacetimevkpz',
+      }),
+    )
+  - Precisamos pegar a url que vem nesse console.log, substituir na aplicação do git sem o final /--*
+  - Neste ponto pegamos o code e vamos precisar do axios para chamar o backend e converter o code em token (mesma coisa da web)
+  - npm i axios
+  - Criamos a lib/api.ts dentro de source:
+    export const api = axios.create({
+      baseURL: 'http:// 192.168.1.103:3333'})
+  - Para funcionar o ipv4 no mobile precisamos la no backend onde está port:3333 passar host: '0.0.0.0'
+  - Precisamos também alterar a env do backend para a do mobile (mesma coisa da web porem quando estiver usando web comentar a do mobile e quando estiver usando mobile comentar a da web)
+  - Feito isto ja estamos recebendo nosso jwt, precisamos salva, no caso do mobile no secure store
+
+Salvando token no secure store:
+  - Começamos instalando o expo secure store
+  - npx expo install expo-secure-store
+  - Seguimos as configs da doc:
+  (https://docs.expo.dev/versions/latest/sdk/securestore/?utm_source=google&utm_medium=cpc&utm_content=performancemax&gclid=CjwKCAjw36GjBhAkEiwAKwIWydVC-_Va24dUygzHufsAg1nNg2-zu1B6O6zlF9cdDNFzldEQ6QmYhhoCdREQAvD_BwE)
+  - Importamos o secure store conforme a doc:
+    import * as SecureStore from 'expo-secure-store';
+  - Pegamos a function save da documentação para o código (essa função vai salvar nosso token recebendo uma chave, valor)
+  - SecureStore.setItemAsync('token', token)
+
+Organizando as navegações do android (Expo router):
+- doc: https://expo.github.io/router/docs/
+- npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar
+- Permite fazer o mesmo esquema de rotas do next.js na web
+- Vamos no package.json e trocamos a linha do main para a da doc: "main": "index.js"
+- Criamos um index.js na raiz e importamos: import "expo-router/entry";
+- Dentro do package.json como estamos usando npm 8.3+ colocamos em baixo das dependencias:
+    "overrides": {
+    "metro": "0.76.0",
+    "metro-resolver": "0.76.0"
+  },
+- Vamos no babel e adicionamos o plugin da doc: require.resolve("expo-router/babel")
+- Criamos nossa pasta app como no front web no mobile
+- Criamos nosso index.tsx e movemos todo nosso app.tsx la pra dentro
+- Apagamos o app.tsx
+
+- Nessa parte deu um erro e a tela ficou toda branca, foi um erro do nativewind. Solução: https://github.com/marklawlor/nativewind/issues/419
+
+- Tudo estando devidamente solucionado, a pagina está aparecendo corretamente
+- Criamos então a autenticação da api dentro da func handleGithubOAuthCode e criamos o const router = useRouter() para depois de autenticar poder fazer um router.push('./memories')
+- Sendo assim o usuário autenticado para na parte de memórias

@@ -1,0 +1,9 @@
+Aula 04: Integração Mobile e Web
+
+Web:
+- Retomando a configuração da web, primeiro vamos finalizar ela antes de começar as integrações.
+- Conforme o figma, temos sempre uma parte da aplicaçao que nunca muda independente do caminho que vc está.
+    Ps: Relembrando no Next, cada caminho (ex: localhosto:3000/memories/new) é uma pasta (ex: Pasta memories, pasta new, arquivo page.tsx)
+- Então quando falamos de algo que Não muda na aplicação, estamos falando do layout (até ja vem um layout.tsx criado)
+- Copiamos então toda parte esquerda (comentário Left screen) que está no return da nossa page.tsx e colamos em baixo de children na layout
+- Ajustamos os imports

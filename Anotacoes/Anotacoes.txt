@@ -124,7 +124,8 @@ Eslint + Prettier Tailwind
 }
 - Se precisar dar um ctrl shift p e reload window no vscode para ele ler as novas configs do prettier e ordenar as classes de css automaticamente
 
-Configurações Mobile
+Mobile:
+
  - Começamos criando o projeto mobile (com emulador) - npx create-expo-app mobile
  - trocamos a extensão da app pra tsx (ele entende ts automaticamente)
  - rodamos com npm run start
@@ -168,6 +169,6 @@ Eslint+prettier mobile
 Importando imagens no next:
 - Primeiramente fazemos o import do image: import Image from 'next/image'
 - Fazemos o import da imagem ex: import nlwLogo from '../assets/nlw-spacetime-logo.svg'
-- Usamos na div como: <Image src={nlwLogo} alt="nlw logo image" />
+- Usamos na div como: <Image src={nlwLogo} alt="nlw logo image" />.
 
 
